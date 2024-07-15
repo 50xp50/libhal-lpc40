@@ -29,6 +29,7 @@ libhal_build_demos(
   spi
   blank
   stream_dac
+  sandbox
 
   PACKAGES
   libhal-lpc40
