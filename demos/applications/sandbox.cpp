@@ -10,26 +10,40 @@
 #include <libhal-util/spi.hpp>
 #include <libhal-util/steady_clock.hpp>
 
-uint8_t LED_Data;
-std::array<hal::byte, 3> highBit {0x01, 0x01, 0x00};
-std::array<hal::byte, 3> lowBit {0x01, 0x00, 0x00};
-std::array<hal::byte, 8> buffer{};
-
-void setLED(uint8_t R, uint8_t G, uint8_t B, hal::lpc40::spi& p_spi) {
+void setLED(uint8_t R, uint8_t G, uint8_t B, hal::lpc40::spi& p_spi, uint8_t r, uint8_t g, uint8_t b) {
 
   uint32_t color = G << 16 | R << 8 | B;
+  uint32_t color2 = g << 16 | r << 8 | b;
   std::array<hal::byte, 24> dataLED;
+  std::array<hal::byte, 24> dataLED2;
 
+  int8_t j = 0;
   for (int8_t i = 23; i >= 0; i--) {
-    if (((color >> i) &0x01) == 1) {
-      dataLED[i] = 0xE0;
+    if (((color >> i) & 0x01) == 1) {
+      dataLED[j] = 0xE0;
     } 
     else {
-      dataLED[i] = 0x80;
+      dataLED[j] = 0x80;
     }
+    j++;
+  }
+
+  j = 0;
+  for (int8_t i = 23; i >= 0; i--) {
+    if (((color2 >> i) &0x01) == 1) {
+      dataLED2[j] = 0xE0;
+    } 
+    else {
+      dataLED2[j] = 0x80;
+    }
+    j++;
   }
 
   //p_spi.transfer(dataLED, buffer);
+  hal::write(p_spi, dataLED);
+  hal::write(p_spi, dataLED2);
+  hal::write(p_spi, dataLED);
+  hal::write(p_spi, dataLED2);
   hal::write(p_spi, dataLED);
 }
 
@@ -53,8 +67,12 @@ void application ()
 
     while (1) {
       using namespace std::literals;
-      setLED(159, 231, 255, spi2);
-      hal::delay(steady_clock, 1ms);
+
+      setLED(255, 0, 0, spi2, 0, 255, 0);
+      hal::delay(steady_clock, 1000ms);
+      // setLED(0, 0, 255, spi2, 255, 0, 0);
+      // hal::delay(steady_clock, 1000ms);
+      
       hal::print(uart0, "Looped\n");
     }
 }
