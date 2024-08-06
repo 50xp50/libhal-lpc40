@@ -30,6 +30,7 @@ libhal_build_demos(
   blank
   stream_dac
   sandbox
+  ws2812b
 
   PACKAGES
   libhal-lpc40

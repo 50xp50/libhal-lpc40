@@ -35,6 +35,7 @@ libhal_test_and_make_library(
   src/spi.cpp
   src/dma.cpp
   src/stream_dac.cpp
+  src/ws2812b.cpp
 
   TEST_SOURCES
   tests/adc.test.cpp
